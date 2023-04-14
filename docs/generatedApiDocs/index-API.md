@@ -26,7 +26,10 @@ The processed JSON format is an array of sample item below:
 },
 "sessionID": "cmn92zuk0i",
 "subCategory": "codeHintsphp",
-"time": 1669799589768,
+"clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+// server time is approximated time based on servers time. client time should be preferred, and
+// serverTimeUTC used to validate that the client is not wrong/lying about its time.
+"serverTimeUTC": 1669799580000,
 "type": "usage",
 "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
 }
@@ -74,7 +77,10 @@ The processed JSON format is an array of sample item below:
 },
 "sessionID": "cmn92zuk0i",
 "subCategory": "codeHintsphp",
-"time": 1669799589768,
+"clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+// server time is approximated time based on servers time. client time should be preferred, and
+// serverTimeUTC used to validate that the client is not wrong/lying about its time.
+"serverTimeUTC": 1669799580000,
 "type": "usage",
 "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
 }

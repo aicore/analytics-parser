@@ -48,18 +48,20 @@ function _validateSchemaVersion1(object) {
     }
 }
 
-function _flattenValueCountsArray(valueCountArray, timeArray, startTimeUTC, otherFields) {
+function _flattenValueCountsArray(valueCountArray, timeArray, startTimeUTC, serverStartTimeUTC, otherFields) {
     // value count array is of form [0,1, {value1: count1, v2:23 ..}] . if just a number it just indicates a count
     let flattenedArray = [];
     for(let i=0; i<timeArray.length; i++) {
         const timeDriftInMs = timeArray[i] * 1000,
-            currentTime = startTimeUTC + timeDriftInMs;
+            currentClientTime = startTimeUTC + timeDriftInMs,
+            currentServerTime = serverStartTimeUTC + timeDriftInMs;
         let valueCount = valueCountArray[i];
         valueCount = valueCount === null ? 1 : valueCount;
         if(typeof valueCount === 'number') {
             flattenedArray.push({
                 ...otherFields,
-                timeUTC: currentTime,
+                clientTimeUTC: currentClientTime,
+                serverTimeUTC: currentServerTime,
                 count: valueCount
             });
         } else if (typeof valueCount === 'object' && valueCount !== null ) { // typeof null is object in js :o
@@ -67,7 +69,8 @@ function _flattenValueCountsArray(valueCountArray, timeArray, startTimeUTC, othe
             for(let value of values){
                 flattenedArray.push({
                     ...otherFields,
-                    timeUTC: currentTime,
+                    clientTimeUTC: currentClientTime,
+                    serverTimeUTC: currentServerTime,
                     value,
                     count: valueCount[value]
                 });
@@ -79,7 +82,7 @@ function _flattenValueCountsArray(valueCountArray, timeArray, startTimeUTC, othe
     return flattenedArray;
 }
 
-function _flattenEvents(events, startTimeUTC, otherFields) {
+function _flattenEvents(events, startTimeUTC, serverStartTimeUTC, otherFields) {
     let allEventsArray = [];
     if(!events){
         return allEventsArray;
@@ -92,9 +95,8 @@ function _flattenEvents(events, startTimeUTC, otherFields) {
             for(let subCategory of subCategories) {
                 const timeArray = events[type][category][subCategory].time,
                     valueCountsArray = events[type][category][subCategory].valueCount;
-                const flattenedEvents = _flattenValueCountsArray(valueCountsArray, timeArray, startTimeUTC, {
-                    ...otherFields, type, category, subCategory
-                });
+                const flattenedEvents = _flattenValueCountsArray(valueCountsArray, timeArray, startTimeUTC,
+                    serverStartTimeUTC, {...otherFields, type, category, subCategory});
                 allEventsArray = allEventsArray.concat(flattenedEvents);
             }
         }
@@ -123,7 +125,10 @@ function _flattenEvents(events, startTimeUTC, otherFields) {
  *     },
  *     "sessionID": "cmn92zuk0i",
  *     "subCategory": "codeHintsphp",
- *     "time": 1669799589768,
+ *     "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+ *     // server time is approximated time based on servers time. client time should be preferred, and
+ *     // serverTimeUTC used to validate that the client is not wrong/lying about its time.
+ *     "serverTimeUTC": 1669799580000,
  *     "type": "usage",
  *     "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
  * }
@@ -144,13 +149,14 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
     let json = JSON.parse(fs.readFileSync(JSONFilePath, {encoding: 'utf8', flag: 'r'}));
     let expandedEvents = [];
     _validateSchemaVersion1(json);
+    let serverStartTimeUTC = json.unixTimestampUTCAtServer;
     for(let data of json.clientAnalytics){
         _validateSchemaVersion1(data);
         const uuid = data.uuid,
             sessionID = data.sessionID,
             geoLocation = data.geoLocation,
-            startTimeUTC = data.unixTimestampUTC;
-        let events = _flattenEvents(data.events, startTimeUTC, {
+            clientStartTimeUTC = data.unixTimestampUTC;
+        let events = _flattenEvents(data.events, clientStartTimeUTC, serverStartTimeUTC, {
             uuid, sessionID, geoLocation
         });
         expandedEvents.push(...events);
@@ -182,7 +188,10 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
  *     },
  *     "sessionID": "cmn92zuk0i",
  *     "subCategory": "codeHintsphp",
- *     "time": 1669799589768,
+ *    "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+ *     // server time is approximated time based on servers time. client time should be preferred, and
+ *     // serverTimeUTC used to validate that the client is not wrong/lying about its time.
+ *     "serverTimeUTC": 1669799580000,
  *     "type": "usage",
  *     "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
  * }
