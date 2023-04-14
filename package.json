@@ -1,6 +1,6 @@
 {
   "name": "@aicore/analytics-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "parse analytics dumps to json/csv/other formats",
   "main": "src/index.js",
   "type": "module",
