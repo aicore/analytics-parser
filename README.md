@@ -19,6 +19,118 @@ Easily use this template to quick start a production ready nodejs project templa
   <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=sqale_index&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Technical debt" />
 </a>
 
+## APIs
+
+```js
+// after npm install @aicore/analytics-parser
+import {parseJSON, parseGZIP} from '@aicore/analytics-parser';
+```
+
+## parseJSON
+
+Converts the given JSON analytics dump file int a processed JSON representation and returns it.
+Will optionally write the json file to disk if targetFilePath is specified below.
+
+#### The processed JSON format is an array of sample item below:
+
+```js
+[{
+    "type": "usage",
+    "category": "languageServerProtocol",
+    "subCategory": "codeHintsphp",
+    "count": 1,
+    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+    "geoLocation": {
+        "city": "Gurugram (Sector 44)",
+        "continent": "Asia",
+        "country": "India",
+        "isInEuropeanUnion": false
+    },
+    "sessionID": "cmn92zuk0i",
+    "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+    // server time is approximated time based on servers time. client time should be preferred, and
+    // serverTimeUTC used to validate that the client is not wrong/lying about its time.
+    "serverTimeUTC": 1669799580000,
+    "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
+}, ...]
+```
+
+Type: [function][1]
+
+### Parameters
+
+*   `JSONFilePath` **[string][2]**&#x20;
+*   `targetFilePath` **[string][2]?** Optional path, if specified will write to file as well.
+
+### Examples
+
+To parse the extracted json analytics dump file:
+
+```javascript
+// To extract the expanded analytics dump to a json file
+ let expandedJSON = await parseJSON('path/to/someText.json', "target/path/to/expanded.json");
+ // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
+ let expandedJSON = await parseJSON('path/to/someText.json');
+```
+
+Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object representing analytics data as described above.
+
+## parseGZIP
+
+Converts the given Gzip analytics dump file int a processed JSON representation and returns it.
+Will optionally write the json file to disk if targetFilePath is specified below. Note that the file name should be
+exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
+`brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+method instead.
+
+#### The processed JSON format is an array of sample item below:
+
+```js
+[{
+    "type": "usage",
+    "category": "languageServerProtocol",
+    "subCategory": "codeHintsphp",
+    "count": 1,
+    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+    "geoLocation": {
+        "city": "Gurugram (Sector 44)",
+        "continent": "Asia",
+        "country": "India",
+        "isInEuropeanUnion": false
+    },
+    "sessionID": "cmn92zuk0i",
+    "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
+    // server time is approximated time based on servers time. client time should be preferred, and
+    // serverTimeUTC used to validate that the client is not wrong/lying about its time.
+    "serverTimeUTC": 1669799580000,
+    "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
+},...]
+```
+
+Type: [function][1]
+
+### Parameters
+
+*   `gzipFilePath` **[string][2]**&#x20;
+*   `targetFilePath` **[string][2]?** Optional path, if specified will write to file as well.
+
+### Examples
+
+To parse the GZipped analytics dump file:
+
+```javascript
+// To extract to a json file, give the gzip file path. Note that the file name should be
+ // exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
+ // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+ // method instead.
+ let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz',
+    "target/path/to/expanded.json");
+ // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
+ let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
+```
+
+Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object representing analytics data as described above.
+
 # Commands available
 
 ## Building
