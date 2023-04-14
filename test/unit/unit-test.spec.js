@@ -11,21 +11,33 @@
 // see: https://github.com/digitalbazaar/bedrock-test/issues/16 . c8 is drop replacement for nyc coverage reporting tool
 /*global describe, it*/
 
-import helloWorld from "../../src/index.js";
+import {parseGZIP} from "../../src/index.js";
 import * as assert from 'assert';
 import * as chai from 'chai';
 
 let expect = chai.expect;
 
 describe('unit Tests', function() {
-    it('should return Hello World', function() {
-        expect(helloWorld('yo')).to.equal('Hello World yo');
-    });
-
-    describe('#indexOf()', function() {
-        it('should return -1 when the value is not present', function() {
-            expect([1, 2, 3].indexOf(4)).to.equal(-1);
-            assert.equal([1, 2, 3].indexOf(4), -1); // or this, but prefer the above syntax
+    it('should process gzip file', async function() {
+        let expanded = await parseGZIP('test/unit/data/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
+        expect(expanded.length).to.equal(5747);
+        expect(expanded[0]).to.eql({
+            "category": "languageServerProtocol",
+            "count": 1,
+            "geoLocation": {
+                "city": "Gurugram (Sector 44)",
+                "continent": "Asia",
+                "country": "India",
+                "isInEuropeanUnion": false
+            },
+            "sessionID": "cmn92zuk0i",
+            "subCategory": "codeHintsphp",
+            "time": 1669799589768,
+            "type": "usage",
+            "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
         });
     });
+    // with target test
+    // csv test
+    // error test
 });
