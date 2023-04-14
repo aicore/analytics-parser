@@ -44,7 +44,7 @@ describe('unit Tests', function() {
             },
             "sessionID": "cmn92zuk0i",
             "subCategory": "codeHintsphp",
-            "time": 1669799589768,
+            "timeUTC": 1669799589768,
             "type": "usage",
             "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
         });
@@ -66,7 +66,7 @@ describe('unit Tests', function() {
             },
             "sessionID": "cmn92zuk0i",
             "subCategory": "codeHintsphp",
-            "time": 1669799589768,
+            "timeUTC": 1669799589768,
             "type": "usage",
             "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
         });
@@ -88,7 +88,7 @@ describe('unit Tests', function() {
             },
             "sessionID": "cmn92zuk0i",
             "subCategory": "codeHintsphp",
-            "time": 1669799589768,
+            "timeUTC": 1669799589768,
             "type": "usage",
             "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
         });
