@@ -1,8 +1,5 @@
-# template-nodejs
-A template project for nodejs. Has integrated linting, testing,
-coverage, reporting, GitHub actions for publishing to npm repository, dependency updates and other goodies.
-
-Easily use this template to quick start a production ready nodejs project template.
+# analyticsParser
+A module that can transform raw analytics dump files.
 
 ## Code Guardian
 [![<app> build verification](https://github.com/aicore/analytics-parser/actions/workflows/build_verify.yml/badge.svg)](https://github.com/aicore/analytics-parser/actions/workflows/build_verify.yml)
