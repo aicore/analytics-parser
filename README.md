@@ -5,31 +5,19 @@ coverage, reporting, GitHub actions for publishing to npm repository, dependency
 Easily use this template to quick start a production ready nodejs project template.
 
 ## Code Guardian
-[![<app> build verification](https://github.com/aicore/template-nodejs/actions/workflows/build_verify.yml/badge.svg)](https://github.com/aicore/template-nodejs/actions/workflows/build_verify.yml)
+[![<app> build verification](https://github.com/aicore/analytics-parser/actions/workflows/build_verify.yml/badge.svg)](https://github.com/aicore/analytics-parser/actions/workflows/build_verify.yml)
 
-<a href="https://sonarcloud.io/summary/new_code?id=aicore_template-nodejs-ts">
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=alert_status" alt="Sonar code quality check" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=security_rating" alt="Security rating" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=vulnerabilities" alt="vulnerabilities" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=coverage" alt="Code Coverage" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=bugs" alt="Code Bugs" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=reliability_rating" alt="Reliability Rating" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=sqale_rating" alt="Maintainability Rating" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=ncloc" alt="Lines of Code" />
-  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_template-nodejs-ts&metric=sqale_index" alt="Technical debt" />
+<a href="https://sonarcloud.io/summary/new_code?id=aicore_analytics-parser&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed">
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=alert_status&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Sonar code quality check" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=security_rating&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Security rating" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=vulnerabilities&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="vulnerabilities" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=coverage&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Code Coverage" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=bugs&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Code Bugs" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=reliability_rating&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Reliability Rating" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=sqale_rating&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Maintainability Rating" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=ncloc&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Lines of Code" />
+  <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=sqale_index&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Technical debt" />
 </a>
-
-
-# TODOs after template use
-## !!!Please see all issues in the generated repository as an issue will be generated tracking the fix of each of the below items.  
-1. Update package.json with your app defaults
-2. Check Build actions on pull requests.
-3. create a home page in wiki by going to wiki link https://github.com/<your_org>/<your_repo>/wiki
-4. Goto github `repository` > `settings`> and uncheck `Allow merge commits`. this is usually automatically done by code guardian bots in core.ai org. so you may just need to verify it.
-5. In sonar cloud, enable Automatic analysis from `Administration
-   Analysis Method` for the first time before a pull request is raised: ![image](https://user-images.githubusercontent.com/5336369/148695840-65585d04-5e59-450b-8794-54ca3c62b9fe.png)
-6. Check codacy runs on pull requests, set codacy defaults. You may remove codacy if sonar cloud is only needed.
-7. Update the above Code Guardian badges; change all `id=aicore_template-nodejs-ts` to the sonar id of your project fields. see this PR: https://github.com/aicore/libcache/pull/13
 
 # Commands available
 
