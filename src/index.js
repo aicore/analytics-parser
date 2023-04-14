@@ -44,7 +44,7 @@ function silentlyDelete(filePath) {
 function _validateSchemaVersion1(object) {
     // the array always ends with a special object {endTime}
     if(!object.endTime && object.schemaVersion !== 1){
-        throw new Error("Only schema version 1 is supported, but received schema version", object.schemaVersion);
+        throw new Error("Only schema version 1 is supported, but received schema version " + object.schemaVersion);
     }
 }
 
@@ -119,9 +119,6 @@ function _flattenEvents(events, startTimeUTC, otherFields) {
 export async function parseJSON(JSONFilePath, targetFilePath) {
     let json = JSON.parse(fs.readFileSync(JSONFilePath, {encoding: 'utf8', flag: 'r'}));
     let expandedEvents = [];
-    if(targetFilePath){
-        fs.writeFileSync(targetFilePath, JSON.stringify(json));
-    }
     _validateSchemaVersion1(json);
     for(let data of json.clientAnalytics){
         _validateSchemaVersion1(data);
@@ -133,6 +130,9 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
             uuid, sessionID, geoLocation
         });
         expandedEvents.push(...events);
+    }
+    if(targetFilePath){
+        fs.writeFileSync(targetFilePath, JSON.stringify(expandedEvents));
     }
     return expandedEvents;
 }
