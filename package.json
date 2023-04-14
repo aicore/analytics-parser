@@ -1,17 +1,14 @@
 {
-  "name": "@aicore/template-nodejs",
-  "version": "1.0.8",
-  "description": "Template for nodejs with unit gulp build, test, coverage, code guardian, github and Other defaults",
+  "name": "@aicore/analytics-parser",
+  "version": "1.0.0",
+  "description": "parse analytics dumps to json/csv/other formats",
   "main": "src/index.js",
   "type": "module",
   "keywords": [
-    "template",
-    "nodejs",
-    "unit",
-    "testing",
-    "mocha",
-    "chai",
-    "coverage"
+    "analytics",
+    "parser",
+    "json",
+    "csv"
   ],
   "scripts": {
     "eslint": "npm run lint",
@@ -37,14 +34,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aicore/template-nodejs.git"
+    "url": "git+https://github.com/aicore/analytics-parser.git"
   },
   "author": "Arun, core.ai",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/aicore/template-nodejs/issues"
+    "url": "https://github.com/aicore/analytics-parser/issues"
   },
-  "homepage": "https://github.com/aicore/template-nodejs#readme",
+  "homepage": "https://github.com/aicore/analytics-parser#readme",
   "devDependencies": {
     "@commitlint/cli": "17.5.1",
     "@commitlint/config-conventional": "17.4.4",
