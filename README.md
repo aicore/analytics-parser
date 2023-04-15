@@ -25,14 +25,15 @@ npm install @aicore/analytics-parser
 ```js
 import {parseGZIP} from '@aicore/analytics-parser';
 ```
-### Get the analytics logs
+### Get the analytics dumps
 The analytics logs will be structured in the storage bucket as follows:
 1. Each analytics app will have a root folder under which the analytics data is collected. (Eg. `brackets-prod`).
 2. Within each app folder, the raw analytics dump files can be located easily with the date.
    Eg. `brackets-prod/2022/10/11/*` will have all analytics data for that day.
 3. Download the analytics gzip files for the dates that you desire. https://cyberduck.io/ is a good utility
    for this in windows and mac.
-### Parse the extracted zip file
+
+### Parse the downloaded gzip analytics dump file
 
 To parse the GZipped analytics dump file using the `parseGZIP` API:
 
