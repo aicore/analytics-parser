@@ -14,8 +14,6 @@
 // jshint ignore: start
 /*global describe, it*/
 
-import {parseJSON} from "../../src/index.js";
-import * as assert from 'assert';
 import * as chai from 'chai';
 
 let expect = chai.expect;
