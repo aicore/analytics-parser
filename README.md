@@ -16,71 +16,53 @@ A module that can transform raw analytics dump files.
   <img src="https://sonarcloud.io/api/project_badges/measure?project=aicore_analytics-parser&metric=sqale_index&token=96d7cf61c987f81e0c2aa88021f6383f6f2db5ed" alt="Technical debt" />
 </a>
 
-## APIs
-
-```js
-// after npm install @aicore/analytics-parser
-import {parseJSON, parseGZIP} from '@aicore/analytics-parser';
+## Getting Started
+### Install this library
+```bash
+npm install @aicore/analytics-parser
 ```
-
-## parseJSON
-
-Converts the given JSON analytics dump file int a processed JSON representation and returns it.
-Will optionally write the json file to disk if targetFilePath is specified below.
-
-#### The processed JSON format is an array of sample item below:
-
+### Import the library
 ```js
-[{
-    "type": "usage",
-    "category": "languageServerProtocol",
-    "subCategory": "codeHintsphp",
-    "count": 1,
-    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
-    "geoLocation": {
-        "city": "Gurugram (Sector 44)",
-        "continent": "Asia",
-        "country": "India",
-        "isInEuropeanUnion": false
-    },
-    "sessionID": "cmn92zuk0i",
-    "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
-    // server time is approximated time based on servers time. client time should be preferred, and
-    // serverTimeUTC used to validate that the client is not wrong/lying about its time.
-    "serverTimeUTC": 1669799580000,
-    "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
-}, ...]
+import {parseGZIP} from '@aicore/analytics-parser';
 ```
+### Get the analytics logs
+The analytics logs will be structured in the storage bucket as follows:
+1. Each analytics app will have a root folder under which the analytics data is collected. (Eg. `brackets-prod`).
+2. Within each app folder, the raw analytics dump files can be located easily with the date.
+   Eg. `brackets-prod/2022/10/11/*` will have all analytics data for that day.
+3. Download the analytics gzip files for the dates that you desire. https://cyberduck.io/ is a good utility
+   for this in windows and mac.
+### Parse the extracted zip file
 
-Type: [function][1]
-
-### Parameters
-
-*   `JSONFilePath` **[string][2]**&#x20;
-*   `targetFilePath` **[string][2]?** Optional path, if specified will write to file as well.
-
-### Examples
-
-To parse the extracted json analytics dump file:
+To parse the GZipped analytics dump file using the `parseGZIP` API:
 
 ```javascript
-// To extract the expanded analytics dump to a json file
- let expandedJSON = await parseJSON('path/to/someText.json', "target/path/to/expanded.json");
- // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
- let expandedJSON = await parseJSON('path/to/someText.json');
+// Give the gzip input file path. Note that the file name should be
+// exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
+// `brackets-prod.2022-11-30-9-13-17-656.v1.json`.
+let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
 ```
 
-Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object representing analytics data as described above.
+#### Understanding return data type of `parseGZIP` API
+The returned `expandedJSON` object is an array of event point objects as below.
+Each event point object has the following fields:
 
-## parseGZIP
-
-Converts the given Gzip analytics dump file int a processed JSON representation and returns it.
-Will optionally write the json file to disk if targetFilePath is specified below. Note that the file name should be
-exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
-`brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
-method instead.
-
-#### The processed JSON format is an array of sample item below:
+1. (`type`, `category`, `subCategory`): These three strings identifies the **event** and are guaranteed to be present.
+Eg. `(type: platform, category: startup, subCategory: time)`,
+`(type: platform, category: language, subCategory: en-us)`, `(type: UI, category: click, subCategory: closeBtn)`
+2. `uuid`: Unique user ID that persists across sessions.
+3. `sessionID`: A session ID that gets reset on every session. For Eg. Browser Tab close resets `sessionID`.
+4. `clientTimeUTC`: A unix timestamp signalling the exact time(accurate to 3 seconds) at which the said event occurred
+according to the clients clock. This is the preferred time to use for the event. Note that the client clock may be wrong
+or misleading as this is client specified data. So cross-reference it to be within 30 minutes of `serverTimeUTC`.
+5. `serverTimeUTC`: A unix timestamp signalling the exact time(accurate to within 10 minutes) at which the said event
+occurred according to the servers clock. Use this only to cross-reference with `clientTimeUTC`.
+6. `count`: The number of times the **event** occurred in the time. Guaranteed to be present.
+7. `value`: Value is an optional string usually representing a number. if present, the `count` specified the number
+of times the `value` happened. This is only present in certain events that tracks values.
+Eg. If we are tracking `JS file open` latencies, `(value: 250, count 2)` means that we got 2 `JS file open` events
+each with latency of 250 units. 
+8. `geoLocation`: Of the user raising the event.
 
 ```js
 [{
@@ -88,7 +70,7 @@ method instead.
     "category": "languageServerProtocol",
     "subCategory": "codeHintsphp",
     "count": 1,
-    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+    "value": "250", // value is optional, if present, the count specified the number of times the value happened.
     "geoLocation": {
         "city": "Gurugram (Sector 44)",
         "continent": "Asia",
@@ -96,37 +78,25 @@ method instead.
         "isInEuropeanUnion": false
     },
     "sessionID": "cmn92zuk0i",
-    "clientTimeUTC": 1669799589768, // this is the time as communicated by the client, but client clock may be wrong
-    // server time is approximated time based on servers time. client time should be preferred, and
-    // serverTimeUTC used to validate that the client is not wrong/lying about its time.
+    "clientTimeUTC": 1669799589768,
     "serverTimeUTC": 1669799580000,
     "uuid": "208c5676-746f-4493-80ed-d919775a2f1d"
 },...]
 ```
 
-Type: [function][1]
 
-### Parameters
+## The Analytics Zip file
+The analytics zip file name is of the format `brackets-prod.YYYY-MM-DD-H-M-S-ms.v1.json.tar.gz`. It has a single JSON
+file when extracted with name of form `brackets-prod.YYYY-MM-DD-H-M-S-ms.v1.json`(referred here on as extracted JSON).
+The first part of the name contains the app name(Eg. `brackets-prod`) for which the dump corresponds to and the
+second part is the timestamp(accurate to milliseconds) at which the dump was collected at the server.
 
-*   `gzipFilePath` **[string][2]**&#x20;
-*   `targetFilePath` **[string][2]?** Optional path, if specified will write to file as well.
+To learn more about the raw extracted JSON format, see this [wiki](https://github.com/aicore/Core-Analytics-Server/blob/main/docs/architecture.md#client-schema).
+But knowing the raw format is not necessary for this library. The purpose of this library is to convert this raw JSON to
+a much more human-readable JSON format via the `parseGZIP` API outlined below.
 
-### Examples
-
-To parse the GZipped analytics dump file:
-
-```javascript
-// To extract to a json file, give the gzip file path. Note that the file name should be
- // exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
- // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
- // method instead.
- let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz',
-    "target/path/to/expanded.json");
- // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
- let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
-```
-
-Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object representing analytics data as described above.
+## Detailed API docs
+[See this link for detailed API docs.](https://github.com/aicore/analytics-parser/blob/main/docs/generatedApiDocs/index-API.md)
 
 # Commands available
 

@@ -27,17 +27,17 @@
 import util from 'util';
 import child_process from 'child_process';
 const exec = util.promisify(child_process.exec);
-import * as fs from "fs";
+import { readFile, writeFile,unlink } from 'node:fs/promises';
 import * as path from "path";
 
 function silentlyDelete(filePath) {
     return new Promise((resolve)=>{
-        fs.unlink(filePath, function(err){
-            if(err) {
+        unlink(filePath)
+            .then(resolve)
+            .catch((err)=>{
                 console.log(err);
-            }
-            resolve();
-        });
+                resolve();
+            });
     });
 }
 
@@ -105,7 +105,7 @@ function _flattenEvents(events, startTimeUTC, serverStartTimeUTC, otherFields) {
 }
 
 /**
- * Converts the given JSON analytics dump file int a processed JSON representation and returns it.
+ * Converts the given extracted JSON analytics dump file int a processed JSON representation and returns it.
  * Will optionally write the json file to disk if targetFilePath is specified below.
  *
  * #### The processed JSON format is an array of sample item below:
@@ -115,7 +115,7 @@ function _flattenEvents(events, startTimeUTC, serverStartTimeUTC, otherFields) {
  *     "category": "languageServerProtocol",
  *     "subCategory": "codeHintsphp",
  *     "count": 1,
- *     "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+ *     "value": "45", // value is optional, if present, the count specified the number of times the value happened.
  *     "geoLocation": {
  *         "city": "Gurugram (Sector 44)",
  *         "continent": "Asia",
@@ -132,9 +132,9 @@ function _flattenEvents(events, startTimeUTC, serverStartTimeUTC, otherFields) {
  * ```
  * @example <caption>To parse the extracted json analytics dump file:</caption>
  *  // To extract the expanded analytics dump to a json file
- *  let expandedJSON = await parseJSON('path/to/someText.json', "target/path/to/expanded.json");
+ *  let expandedJSON = await parseExtractedFile('path/to/someText.json', "target/path/to/expanded.json");
  *  // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
- *  let expandedJSON = await parseJSON('path/to/someText.json');
+ *  let expandedJSON = await parseExtractedFile('path/to/someText.json');
  *
  * @param {string} JSONFilePath
  * @param {string} [targetFilePath] Optional path, if specified will write to file as well.
@@ -142,8 +142,8 @@ function _flattenEvents(events, startTimeUTC, serverStartTimeUTC, otherFields) {
  * @type {function}
  */
 
-export async function parseJSON(JSONFilePath, targetFilePath) {
-    let json = JSON.parse(fs.readFileSync(JSONFilePath, {encoding: 'utf8', flag: 'r'}));
+export async function parseExtractedFile(JSONFilePath, targetFilePath) {
+    let json = JSON.parse(await readFile(JSONFilePath, {encoding: 'utf8', flag: 'r'}));
     let expandedEvents = [];
     _validateSchemaVersion1(json);
     let serverStartTimeUTC = json.unixTimestampUTCAtServer;
@@ -159,7 +159,7 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
         expandedEvents.push(...events);
     }
     if(targetFilePath){
-        fs.writeFileSync(targetFilePath, JSON.stringify(expandedEvents));
+        await writeFile(targetFilePath, JSON.stringify(expandedEvents));
     }
     return expandedEvents;
 }
@@ -168,7 +168,7 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
  * Converts the given Gzip analytics dump file int a processed JSON representation and returns it.
  * Will optionally write the json file to disk if targetFilePath is specified below. Note that the file name should be
  * exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
- * `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+ * `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse the extracted JSON, use the `parseExtractedFile`
  * method instead.
  *
  * #### The processed JSON format is an array of sample item below:
@@ -178,7 +178,7 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
  *     "category": "languageServerProtocol",
  *     "subCategory": "codeHintsphp",
  *     "count": 1,
- *     "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+ *     "value": "23", // value is optional, if present, the count specified the number of times the value happened.
  *     "geoLocation": {
  *         "city": "Gurugram (Sector 44)",
  *         "continent": "Asia",
@@ -196,7 +196,7 @@ export async function parseJSON(JSONFilePath, targetFilePath) {
  * @example <caption>To parse the GZipped analytics dump file:</caption>
  *  // To extract to a json file, give the gzip file path. Note that the file name should be
  *  // exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
- *  // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+ *  // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse Extracted JSON, use the `parseExtractedFile`
  *  // method instead.
  *  let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz',
  *     "target/path/to/expanded.json");
@@ -212,7 +212,7 @@ export async function parseGZIP(gzipFilePath, targetFilePath) {
     let jsonPath = gzipFilePath.replace(".tar.gz", "");
     try{
         await exec(`tar -xvf ${gzipFilePath} -C ${path.dirname(gzipFilePath)}`);
-        let json = await parseJSON(jsonPath, targetFilePath);
+        let json = await parseExtractedFile(jsonPath, targetFilePath);
         await silentlyDelete(jsonPath);
         return json;
     } catch (e) {

@@ -4,9 +4,9 @@
 
 A module that can transform raw analytics dump files.
 
-## parseJSON
+## parseExtractedFile
 
-Converts the given JSON analytics dump file int a processed JSON representation and returns it.
+Converts the given extracted JSON analytics dump file int a processed JSON representation and returns it.
 Will optionally write the json file to disk if targetFilePath is specified below.
 
 #### The processed JSON format is an array of sample item below:
@@ -17,7 +17,7 @@ Will optionally write the json file to disk if targetFilePath is specified below
     "category": "languageServerProtocol",
     "subCategory": "codeHintsphp",
     "count": 1,
-    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+    "value": "45", // value is optional, if present, the count specified the number of times the value happened.
     "geoLocation": {
         "city": "Gurugram (Sector 44)",
         "continent": "Asia",
@@ -46,9 +46,9 @@ To parse the extracted json analytics dump file:
 
 ```javascript
 // To extract the expanded analytics dump to a json file
- let expandedJSON = await parseJSON('path/to/someText.json', "target/path/to/expanded.json");
+ let expandedJSON = await parseExtractedFile('path/to/someText.json', "target/path/to/expanded.json");
  // if you do not want to expand to a json file and only want the parsed array, omit the second parameter.
- let expandedJSON = await parseJSON('path/to/someText.json');
+ let expandedJSON = await parseExtractedFile('path/to/someText.json');
 ```
 
 Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object representing analytics data as described above.
@@ -58,7 +58,7 @@ Returns **[Promise][3]<[Object][4]>** Promised that resolves to an object repres
 Converts the given Gzip analytics dump file int a processed JSON representation and returns it.
 Will optionally write the json file to disk if targetFilePath is specified below. Note that the file name should be
 exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
-`brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+`brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse the extracted JSON, use the `parseExtractedFile`
 method instead.
 
 #### The processed JSON format is an array of sample item below:
@@ -69,7 +69,7 @@ method instead.
     "category": "languageServerProtocol",
     "subCategory": "codeHintsphp",
     "count": 1,
-    "value": 1, // value is optional, if present, the count specified the number of times the value happened.
+    "value": "23", // value is optional, if present, the count specified the number of times the value happened.
     "geoLocation": {
         "city": "Gurugram (Sector 44)",
         "continent": "Asia",
@@ -99,7 +99,7 @@ To parse the GZipped analytics dump file:
 ```javascript
 // To extract to a json file, give the gzip file path. Note that the file name should be
  // exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
- // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse arbitrary JSON, use the `parseJSON`
+ // `brackets-prod.2022-11-30-9-13-17-656.v1.json`. If you want to parse Extracted JSON, use the `parseExtractedFile`
  // method instead.
  let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz',
     "target/path/to/expanded.json");

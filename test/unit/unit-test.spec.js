@@ -11,7 +11,7 @@
 // see: https://github.com/digitalbazaar/bedrock-test/issues/16 . c8 is drop replacement for nyc coverage reporting tool
 /*global describe, it*/
 
-import {parseGZIP, parseJSON} from "../../src/index.js";
+import {parseGZIP, parseExtractedFile} from "../../src/index.js";
 import * as assert from 'assert';
 import * as chai from 'chai';
 import fs from "fs";
@@ -77,7 +77,7 @@ describe('unit Tests', function() {
 
     it('should process JSON file', async function() {
         let srcFile = 'test/unit/data/sample.v1.json';
-        let expanded = await parseJSON(srcFile);
+        let expanded = await parseExtractedFile(srcFile);
         expect(expanded.length).to.equal(5747);
         expect(expanded[0]).to.eql({
             "category": "languageServerProtocol",
@@ -101,7 +101,7 @@ describe('unit Tests', function() {
         let srcFile = 'test/unit/data/sample.v2.json';
         let err;
         try{
-            await parseJSON(srcFile);
+            await parseExtractedFile(srcFile);
         } catch (e) {
             err = e;
         }
@@ -112,7 +112,7 @@ describe('unit Tests', function() {
         let srcFile = 'test/unit/data/invalid.test.json';
         let err;
         try{
-            await parseJSON(srcFile);
+            await parseExtractedFile(srcFile);
         } catch (e) {
             err = e;
         }
