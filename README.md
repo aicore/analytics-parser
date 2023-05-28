@@ -33,18 +33,25 @@ The analytics logs will be structured in the storage bucket as follows:
 3. Download the analytics gzip files for the dates that you desire. https://cyberduck.io/ is a good utility
    for this in windows and mac.
 
-### Parse the downloaded gzip analytics dump file
+### Extract the Gzip files
+```bash
+# unzip all files recursively. will create *.json like file names
+find . -name "*.tar.gz" -exec sh -c 'tar xf {} -C $(dirname {})' \;
+```
 
-To parse the GZipped analytics dump file using the `parseGZIP` API:
+You will now see a lot of json files in the downloaded folder.
+
+### Parse the extracted JSON file
+To parse the extracted JSON file using the `parseExtractedFile` API:
 
 ```javascript
 // Give the gzip input file path. Note that the file name should be
 // exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
 // `brackets-prod.2022-11-30-9-13-17-656.v1.json`.
-let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
+let expandedJSON = await parseExtractedFile('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json');
 ```
 
-#### Understanding return data type of `parseGZIP` API
+#### Understanding return data type of `parseExtractedFile` API
 The returned `expandedJSON` object is an array of event point objects as below.
 Each event point object has the following fields:
 
@@ -95,6 +102,20 @@ second part is the timestamp(accurate to milliseconds) at which the dump was col
 To learn more about the raw extracted JSON format, see this [wiki](https://github.com/aicore/Core-Analytics-Server/blob/main/docs/architecture.md#client-schema).
 But knowing the raw format is not necessary for this library. The purpose of this library is to convert this raw JSON to
 a much more human-readable JSON format via the `parseGZIP` API outlined below.
+
+### Parse the Analytics gzip dump file without extracting
+
+If there are large number of files and you cannot extract the whole
+zipped folder due to space constraints, you can use this API to parse the GZipped analytics dump as is using the `parseGZIP` API.
+
+This is a tradeoff between speed and size required as the parseGZip API doesnt need the full contents to be extracted saving space.
+
+```javascript
+// Give the gzip input file path. Note that the file name should be
+// exactly of the form `brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz` containing a single file
+// `brackets-prod.2022-11-30-9-13-17-656.v1.json`.
+let expandedJSON = await parseGZIP('path/to/brackets-prod.2022-11-30-9-13-17-656.v1.json.tar.gz');
+```
 
 ## Detailed API docs
 [See this link for detailed API docs.](https://github.com/aicore/analytics-parser/blob/main/docs/generatedApiDocs/index-API.md)
